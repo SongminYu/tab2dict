@@ -6,8 +6,8 @@ setuptools.setup(
     version="0.0.1",
     description="tab2dict supports data handing in developing scientific software.",
     long_description="`tab2dict` supports data handling in developing of scientific software (i.e., models). "
-                     "It can convert predefined input tables (`.xlsx` or `.csv`) into `TabDict` instances. "
-                     "Then, the items therein can be fetched by `TabKey` instances.",
+    "It can convert predefined input tables (`.xlsx` or `.csv`) into `TabDict` instances. "
+    "Then, the items therein can be fetched by `TabKey` instances.",
     long_description_content_type="text/markdown",
     url="https://github.com/SongminYu/tab2dict",
     author="Songmin Yu",
