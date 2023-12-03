@@ -1,4 +1,4 @@
-name: tab2dict
+name: run-test
 on:
   push:
     branches: [ "main" ]
