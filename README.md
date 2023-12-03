@@ -88,16 +88,23 @@ Furthermore, to include timeseries table, `tab2dict` also has `period` as a defa
 
 ## Dependencies
 
--   Python 3.8+
--   pytest
--   pytest-cov
--   pylint
--   black
+Python 3.8+
+
+### For contributors:
+
+* pytest
+* pytest-cov
+* black
+* pylint
+
+### For users:
+
+* pandas
+* openpyxl
 
 ## Version History
 
--   0.0.1
-    -   Initial Release
+* 02.12.2023 - Initial Release (v0.0.1)
 
 ## License
 
