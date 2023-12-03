@@ -114,16 +114,16 @@ In summary,
 
 ## Dependencies
 
-Python 3.8+
+* Python: 3.8 or later
 
-| package      | user | contributor | 
-|--------------|------|-------------|
-| pandas       | √    | √           |
-| openpyxl     | √    | √           |
-| pytest       |      | √           |
-| pytest-cov   |      | √           |
-| black        |      | √           |
-| pylint       |      | √           |
+| package      | user    | contributor | 
+|--------------|---------|-------------|
+| pandas       | &check; | &check;     |
+| openpyxl     | &check; | &check;     |
+| pytest       |         | &check;     |
+| pytest-cov   |         | &check;     |
+| black        |         | &check;     |
+| pylint       |         | &check;     |
 
 ## Version History
 
