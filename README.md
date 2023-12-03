@@ -87,7 +87,24 @@ class TestTabKey(TabKey):
 As shown, the attributes of the `TestTabKey` class are same with the column names in the input tables. 
 They must always start with `id_` (or `period`) as shown above.
 
-### Summary
+### Example
+
+```python
+from tab2dict import TabDict
+
+positions = TabDict.from_path("ID_Position.xlsx")
+project_types = TabDict.from_path("ID_ProjectType.xlsx")
+relation_position_project_type = TabDict.from_path("Relation_Position_ProjectType.xlsx")
+project_size = TabDict.from_path("Data_ProjectSize.xlsx")
+tkey = TestTabKey(id_position=1, id_project_type=2)
+
+positions.get_item(tkey) # -> "Full Prof."
+project_types.get_item(tkey) # -> "Type B"
+relation_position_project_type.get_item(tkey) # -> [1, 2, 3]
+project_size.get_item(tkey) # -> 200
+```
+
+In summary,
 
 * When converting a table to a `TabDict` instance (`tdict`), the index columns are automatically identified and recorded as its `key_cols`. 
 * Users can use `TabKey` instances (`tkey`) to fetch data from the dict, as long as the `tkey` knows the values of the `tdict`'s `key_cols`.
@@ -99,21 +116,18 @@ They must always start with `id_` (or `period`) as shown above.
 
 Python 3.8+
 
-### For contributors:
-
-* pytest
-* pytest-cov
-* black
-* pylint
-
-### For users:
-
-* pandas
-* openpyxl
+| package      | user | contributor | 
+|--------------|------|-------------|
+| pandas       | √    | √           |
+| openpyxl     | √    | √           |
+| pytest       |      | √           |
+| pytest-cov   |      | √           |
+| black        |      | √           |
+| pylint       |      | √           |
 
 ## Version History
 
-* 02.12.2023 - Initial Release (v0.0.1)
+* 04.12.2023 - Initial Release (v0.0.1)
 
 ## License
 
