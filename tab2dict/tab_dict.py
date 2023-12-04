@@ -9,6 +9,8 @@ import pandas as pd
 TabDictType = Union["ID", "Relation", "Data"]
 
 
+# TODO: add cache to improve the speed (like RENDER)
+
 class TabDict:
     def __init__(
         self,
