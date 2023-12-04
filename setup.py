@@ -10,7 +10,7 @@ setuptools.setup(
     "Then, the items therein can be fetched by `TabKey` instances.",
     long_description_content_type="text/markdown",
     url="https://github.com/SongminYu/tab2dict",
-    author="Songmin Yu",
+    author="Songmin Yu, Zhanyi Hou",
     author_email="songmin.yu@outlook.com",
     license="MIT",
     # For classifiers, refer to:
