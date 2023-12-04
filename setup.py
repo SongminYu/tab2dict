@@ -29,7 +29,7 @@ setuptools.setup(
         "Programming Language :: Python :: 3.12",
         "Topic :: Scientific/Engineering",
     ],
-    packages=setuptools.find_namespace_packages(include=["src", "src.*"]),
+    packages=setuptools.find_namespace_packages(include=["tab2dict", "tab2dict.*"]),
     install_requires=[
         "pandas",
         "openpyxl",
