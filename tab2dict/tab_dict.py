@@ -23,6 +23,9 @@ class TabDict:
         self.key_cols = key_cols
         self._data = tab_dict_data
 
+    def __len__(self):
+        return len(self._data.items())
+
     @classmethod
     def from_path(cls, file_path: os.path):
         file_name = file_path.split("/")[-1]
@@ -115,7 +118,6 @@ class TabDict:
 
     def get_item(self, tkey: "TabKey", not_found_default=None):
         key = self.tkey2tuple(tkey)
-        print(key)
         if key in self._data.keys():
             value = self._data[key]
         else:
