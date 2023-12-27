@@ -178,7 +178,6 @@ class TabKey:
                 and key in list(df.columns)
             ):
                 query += f"`{key}` == {value} and "
-        query = query[:-5]
         return df.query(query[:-5])
 
     def to_dict(self):
