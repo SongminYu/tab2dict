@@ -114,11 +114,11 @@ class TabDict:
                     d[tuple(key)] = row[value_column_name]
         return d
 
-    def tkey2tuple(self, tkey: "TabKey") -> tuple:
+    def _tkey2tuple(self, tkey: "TabKey") -> tuple:
         return tuple([int(tkey.__dict__[col]) for col in self.key_cols])
 
     def get_item(self, tkey: "TabKey", not_found_default=None):
-        key = self.tkey2tuple(tkey)
+        key = self._tkey2tuple(tkey)
         if key in self._data.keys():
             value = self._data[key]
         else:
@@ -129,11 +129,11 @@ class TabDict:
         return value
 
     def set_item(self, tkey: "TabKey", value):
-        key = self.tkey2tuple(tkey)
+        key = self._tkey2tuple(tkey)
         self._data[key] = value
 
     def accumulate_item(self, tkey: "TabKey", value):
-        key = self.tkey2tuple(tkey)
+        key = self._tkey2tuple(tkey)
         if key in self._data.keys():
             self._data[key] = self._data[key] + value
         else:
