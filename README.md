@@ -165,7 +165,7 @@ As mentioned, they must always start with `id_` or `time_`.
 
 ### Examples
 
-#### Loading data
+#### Load data
 
 Users can load and convert a data file to a `TabDict` instance (`tdict`) by calling the `from_file` function.
 The index columns will be automatically identified and recorded as its `key_cols`.
