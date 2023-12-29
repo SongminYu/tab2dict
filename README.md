@@ -262,7 +262,7 @@ building_number_result.get_item(tkey) # -> 30000
 
 ## Version History
 
-* 04.12.2023 - Initial Release (v0.0.1)
+* 29.12.2023 - Initial Release (v0.0.1)
 
 ## License
 
