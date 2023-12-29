@@ -9,64 +9,70 @@ import pandas as pd
 TabDictType = Union["ID", "Relation", "Data"]
 
 
-# TODO: add cache to improve the speed (like RENDER)
-
 class TabDict:
     def __init__(
         self,
-        tab_dict_type: TabDictType,
+        tdict_type: TabDictType,
         key_cols: List[str],
-        tab_dict_data: dict,
+        tdict_data: dict,
     ):
         super().__init__()
-        self.tab_dict_type = tab_dict_type
+        self.tdict_type = tdict_type
         self.key_cols = key_cols
-        self._data = tab_dict_data
+        self._data = tdict_data
 
     def __len__(self):
         return len(self._data.items())
 
     @classmethod
-    def from_path(cls, file_path: os.path):
+    def from_file(cls, file_path: os.path, value_column_name: str = "value"):
+        tdict_type = cls._detect_type(file_path)
+        df = cls._load_file(file_path)
+        key_cols = cls._detect_key_cols(df)
+        tdict_data = cls._generate_tdict_data(
+            tdict_type=tdict_type,
+            key_cols=key_cols,
+            df=df,
+            value_column_name=value_column_name,
+        )
+        if tdict_type == "Relation":
+            del key_cols[-1]
+        return cls(tdict_type=tdict_type, key_cols=key_cols, tdict_data=tdict_data)
+
+    @classmethod
+    def from_dataframe(
+        cls, df: pd.DataFrame, tdict_type: TabDictType, value_column_name: str = "value"
+    ):
+        assert tdict_type in [
+            "ID",
+            "Relation",
+            "Data",
+        ], f"TabDictType Invalid: {tdict_type} not supported."
+        key_cols = cls._detect_key_cols(df)
+        tdict_data = cls._generate_tdict_data(
+            tdict_type=tdict_type,
+            key_cols=key_cols,
+            df=df,
+            value_column_name=value_column_name,
+        )
+        return cls(tdict_type=tdict_type, key_cols=key_cols, tdict_data=tdict_data)
+
+    @classmethod
+    def create_empty_data_tdict(cls, key_cols: List[str]):
+        return cls(tdict_type="Data", key_cols=key_cols, tdict_data={})
+
+    @staticmethod
+    def _detect_type(file_path: str):
         file_name = file_path.split("/")[-1]
         assert file_name.startswith(
             ("ID_", "Relation_", "Data_")
         ), "FileName Invalid: must start with 'ID_', 'Relation_', or 'Data_'."
-        tab_dict_type = file_name.split("_")[0]
-        df = cls._load_file(file_path)
-        key_cols = [
-            col
-            for col in list(df.columns)
-            if col.startswith("id_") or col.startswith("period")
-        ]
-        tab_dict_data = cls._generate_tab_dict_data(
-            tab_dict_type=tab_dict_type, key_cols=key_cols, df=df
-        )
-        if tab_dict_type == "Relation":
-            del key_cols[-1]
-        return cls(
-            tab_dict_type=tab_dict_type, key_cols=key_cols, tab_dict_data=tab_dict_data
-        )
+        tdict_type = file_name.split("_")[0]
+        return tdict_type
 
-    @classmethod
-    def from_dataframe(
-        cls, tab_dict_type: TabDictType, key_cols: List[str], df: pd.DataFrame
-    ):
-        assert tab_dict_type in [
-            "ID",
-            "Relation",
-            "Data",
-        ], f"TabDictType Invalid: {tab_dict_type} not supported."
-        tab_dict_data = cls._generate_tab_dict_data(
-            tab_dict_type=tab_dict_type, key_cols=key_cols, df=df
-        )
-        return cls(
-            tab_dict_type=tab_dict_type, key_cols=key_cols, tab_dict_data=tab_dict_data
-        )
-
-    @classmethod
-    def empty(cls, key_cols: List[str], tab_dict_type: TabDictType = "Data"):
-        return cls(tab_dict_type=tab_dict_type, key_cols=key_cols, tab_dict_data={})
+    @staticmethod
+    def _detect_key_cols(df: pd.DataFrame):
+        return [col for col in list(df.columns) if col.startswith(("id_", "time_"))]
 
     @staticmethod
     def _load_file(file_path: os.path) -> pd.DataFrame:
@@ -83,34 +89,29 @@ class TabDict:
         return df
 
     @staticmethod
-    def _generate_tab_dict_data(
-        tab_dict_type: TabDictType, key_cols: List[str], df: pd.DataFrame
+    def _generate_tdict_data(
+        tdict_type: TabDictType,
+        key_cols: List[str],
+        df: pd.DataFrame,
+        value_column_name,
     ) -> dict:
-        assert tab_dict_type in [
-            "ID",
-            "Relation",
-            "Data",
-        ], f"TabDictType Invalid: {tab_dict_type} not supported."
         d = {}
-        if tab_dict_type == "ID":
+        if tdict_type == "ID":
             assert (
                 "name" in df.columns
             ), "ColumnName Error: column must be called 'name' in 'ID' tables."
             for _, row in df.iterrows():
                 d[tuple([row[key_cols[0]]])] = row["name"]
-        elif tab_dict_type == "Relation":
+        elif tdict_type == "Relation":
             keys = df[key_cols[0]].unique()
             for key in keys:
                 d[tuple([key])] = df.loc[df[key_cols[0]] == key][key_cols[1]].to_list()
         else:
-            assert (
-                "value" in df.columns
-            ), "ColumnName Error: column must be called 'value' in 'Data' tables."
             for _, row in df.iterrows():
                 key = []
                 for key_col in key_cols:
                     key.append(row[key_col])
-                    d[tuple(key)] = row["value"]
+                    d[tuple(key)] = row[value_column_name]
         return d
 
     def tkey2tuple(self, tkey: "TabKey") -> tuple:
@@ -183,6 +184,6 @@ class TabKey:
     def to_dict(self):
         d = {}
         for key, value in self.__dict__.items():
-            if value is not None:
+            if key.startswith(("id_", "time_")) and value is not None:
                 d[key] = value
         return d
