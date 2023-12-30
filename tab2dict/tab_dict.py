@@ -63,7 +63,7 @@ class TabDict:
 
     @staticmethod
     def _detect_type(file_path: str):
-        file_name = file_path.split("/")[-1]
+        file_name = os.path.basename(file_path)
         assert file_name.startswith(
             ("ID_", "Relation_", "Data_")
         ), "FileName Invalid: must start with 'ID_', 'Relation_', or 'Data_'."
