@@ -19,8 +19,6 @@ class TabDict:
         super().__init__()
         self.tdict_type = tdict_type
         self.key_cols = key_cols
-        if tdict_type == "Relation":
-            self.key_cols = key_cols[:-1]
         self._data = tdict_data
 
     def __len__(self):
@@ -57,6 +55,8 @@ class TabDict:
             df=df,
             value_column_name=value_column_name,
         )
+        if tdict_type == "Relation":
+            del key_cols[-1]
         return cls(tdict_type=tdict_type, key_cols=key_cols, tdict_data=tdict_data)
 
     @classmethod
