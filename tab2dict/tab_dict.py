@@ -16,7 +16,6 @@ class TabDict:
         key_cols: List[str],
         tdict_data: dict,
     ):
-        super().__init__()
         self.tdict_type = tdict_type
         self.key_cols = key_cols
         self._data = tdict_data
@@ -113,7 +112,7 @@ class TabDict:
                 key = []
                 for key_col in key_cols:
                     key.append(row[key_col])
-                    d[tuple(key)] = row[value_column_name]
+                d[tuple(key)] = row[value_column_name]
         return d
 
     def _tkey2tuple(self, tkey: "TabKey") -> tuple:
