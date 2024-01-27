@@ -3,7 +3,7 @@ import setuptools
 
 setuptools.setup(
     name="tab2dict",
-    version="0.0.2",
+    version="0.0.3",
     description="tab2dict supports data handing in developing scientific software.",
     long_description="`tab2dict` supports data handling in developing of scientific software (i.e., models). "
     "It can convert predefined input tables (`.xlsx` or `.csv`) into `TabDict` instances. "
