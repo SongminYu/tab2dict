@@ -50,6 +50,15 @@ def time_data_tdict():
 
 
 @pytest.fixture
+def time_data_wide_tdict():
+    td = TabDict.from_file(
+        os.path.join(DATA_FOLDER, "Data_EnergyIntensityIndex_Wide.xlsx"),
+        time_column_name="time_year"
+    )
+    return td
+
+
+@pytest.fixture
 def multi_col_data_tdict_a():
     td = TabDict.from_file(
         os.path.join(DATA_FOLDER, "Data_BuildingParameter.xlsx"), value_column_name="a"
@@ -94,12 +103,13 @@ def test_tab_dict_type(id_tdict, relation_tdict, data_tdict, time_data_tdict):
     assert time_data_tdict.tdict_type == "Data"
 
 
-def test_get_item(id_tdict, relation_tdict, data_tdict, time_data_tdict):
+def test_get_item(id_tdict, relation_tdict, data_tdict, time_data_tdict, time_data_wide_tdict):
     tkey = BuildingTabKey(id_sector=1, id_building_type=2, time_year=2030)
     assert id_tdict.get_item(tkey) == "residential"
     assert relation_tdict.get_item(tkey) == [1, 2]
     assert data_tdict.get_item(tkey) == 12000
     assert time_data_tdict.get_item(tkey) == 0.98
+    assert time_data_wide_tdict.get_item(tkey) == 0.98
 
 
 def test_multi_col_data(

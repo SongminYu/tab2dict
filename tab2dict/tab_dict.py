@@ -2,7 +2,7 @@ import math
 import os
 from typing import List
 from typing import Union
-
+from typing import Optional
 import pandas as pd
 
 
@@ -24,36 +24,47 @@ class TabDict:
         return len(self._data.items())
 
     @classmethod
-    def from_file(cls, file_path: os.path, value_column_name: str = "value"):
-        tdict_type = cls._detect_type(file_path)
-        df = cls._load_file(file_path)
-        key_cols = cls._detect_key_cols(df)
-        tdict_data = cls._generate_tdict_data(
-            tdict_type=tdict_type,
-            key_cols=key_cols,
-            df=df,
+    def from_file(cls, file_path: os.path, value_column_name: str = "value", time_column_name: Optional[str] = None):
+        return cls.from_dataframe(
+            df=cls._load_file(file_path),
+            tdict_type=cls._detect_type(file_path),
             value_column_name=value_column_name,
+            time_column_name=time_column_name
         )
-        if tdict_type == "Relation":
-            del key_cols[-1]
-        return cls(tdict_type=tdict_type, key_cols=key_cols, tdict_data=tdict_data)
 
     @classmethod
     def from_dataframe(
-        cls, df: pd.DataFrame, tdict_type: TabDictType, value_column_name: str = "value"
+            cls, df: pd.DataFrame,
+            tdict_type: TabDictType,
+            value_column_name: str = "value",
+            time_column_name: Optional[str] = None
     ):
         assert tdict_type in [
             "ID",
             "Relation",
             "Data",
-        ], f"TabDictType Invalid: {tdict_type} not supported."
+        ], f"tdict_type must be in [ID, Relation, Data]."
         key_cols = cls._detect_key_cols(df)
+        if time_column_name is not None:
+            key_cols.append(time_column_name)
+            not_melted_cols = [col for col in df.columns if col.startswith(("id_", "unit"))]
+            df = pd.melt(df, id_vars=not_melted_cols, var_name=time_column_name, value_name='value')
+            df[time_column_name] = df[time_column_name].astype(int)
+
         tdict_data = cls._generate_tdict_data(
             tdict_type=tdict_type,
             key_cols=key_cols,
             df=df,
             value_column_name=value_column_name,
         )
+        return cls._construct_tdict(
+            tdict_type=tdict_type,
+            key_cols=key_cols,
+            tdict_data=tdict_data
+        )
+
+    @classmethod
+    def _construct_tdict(cls, tdict_type, key_cols, tdict_data):
         if tdict_type == "Relation":
             del key_cols[-1]
         return cls(tdict_type=tdict_type, key_cols=key_cols, tdict_data=tdict_data)
@@ -67,7 +78,7 @@ class TabDict:
         file_name = os.path.basename(file_path)
         assert file_name.startswith(
             ("ID_", "Relation_", "Data_")
-        ), "FileName Invalid: must start with 'ID_', 'Relation_', or 'Data_'."
+        ), "FileName Error: file name must start with 'ID_', 'Relation_', or 'Data_'."
         tdict_type = file_name.split("_")[0]
         return tdict_type
 
