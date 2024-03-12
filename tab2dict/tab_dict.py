@@ -47,10 +47,19 @@ class TabDict:
         key_cols = cls._detect_key_cols(df)
         if time_column_name is not None:
             key_cols.append(time_column_name)
-            not_melted_cols = [col for col in df.columns if col.startswith(("id_", "unit"))]
-            df = pd.melt(df, id_vars=not_melted_cols, var_name=time_column_name, value_name='value')
+            l = []
+            index_cols = [col for col in df.columns if col.startswith(("id_", "unit"))]
+            time_cols = [col for col in df.columns if not col.startswith(("id_", "unit"))]
+            for index, row in df.iterrows():
+                for time_col in time_cols:
+                    d = {}
+                    for index_col in index_cols:
+                        d[index_col] = row[index_col]
+                    d[time_column_name] = time_col
+                    d["value"] = row[time_col]
+                    l.append(d)
+            df = pd.DataFrame(l)
             df[time_column_name] = df[time_column_name].astype(int)
-
         tdict_data = cls._generate_tdict_data(
             tdict_type=tdict_type,
             key_cols=key_cols,
