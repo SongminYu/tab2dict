@@ -23,6 +23,15 @@ class TabDict:
     def __len__(self):
         return len(self._data.items())
 
+    def keys(self):
+        return self._data.keys()
+
+    def values(self):
+        return self._data.values()
+
+    def items(self):
+        return self._data.items()
+
     @classmethod
     def from_file(cls, file_path: os.path, value_column_name: str = "value", time_column_name: Optional[str] = None):
         return cls.from_dataframe(
