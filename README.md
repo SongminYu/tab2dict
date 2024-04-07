@@ -58,7 +58,7 @@ tkey = BuildingTabKey(id_sector=1, id_building_type=2)
 a = building_stock.get_item(tkey) # -> 12000
 ```
 
-There are three main advantages of using `tab2dict`:
+There are two main advantages of using `tab2dict`:
 * As implied by the name, `TabDict` use `dict` to save data. So, the speed of `get_item()` is fast. But of course, the input data will all be loaded and take some space in the memory. 
 * It allows the users to adapt the input tables relatively freely (e.g., adding or removing index columns) with limited changes in the code. This is a good feature especially useful in the agent-based models. Because each agent can be assigned with its own `tabkey`, knowing all the `id_xxx` more than necessary for individual tables or `tabdicts`. Then there can be no necessary changes in the code when one more "subscript (`id_xxx` column)" is added to a parameter in is input table.
 
