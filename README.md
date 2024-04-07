@@ -1,12 +1,69 @@
 # Readme
 
-`tab2dict` is a tool supporting data handling in developing scientific software (i.e., models). 
-The tool can convert predefined input tables (`.xlsx` or `.csv`) into `TabDict` instances.
-Then, the items therein can be fetched by `TabKey` instances.
+## Quick introduction
 
-There are two main advantages of using `tab2dict`:
-* It allows the users to adapt the input tables relatively freely (e.g., adding or removing index columns) with limited changes in the code.
-* As the tables are converted to dictionaries, the fetching speed is faster. With `TabKey`, the readability is also better.
+`tab2dict` aims to solve a common problem in developing scientific software (i.e., models): 
+How to manage data with multiple subscripts, e.g., importing them into the model, saving them to result files, etc.
+
+For example, $N_{s,bt}$ denotes the number of buildings in sector $s$ and with the type $bt$. 
+It is an input parameter of your model. Then, using `tab2dict`, you can do as follows:
+
+First, create a `.xlsx` or `.csv` file as follows to save the data:
+
+| id_sector | id_building_type | unit  | value |
+|-----------|------------------|-------|-------|
+| 1         | 1                | count | 10000 |
+| 1         | 2                | count | 12000 |
+| 2         | 3                | count | 500   |
+| 2         | 6                | count | 3000  |
+| 2         | 7                | count | 200   |
+| 3         | 3                | count | 300   |
+| 3         | 4                | count | 2000  |
+| 4         | 5                | count | 2500  |
+| 5         | 3                | count | 800   |
+| 5         | 5                | count | 100   |
+| 5         | 7                | count | 400   |
+
+Second, use the following code to import the data into the model as an instance of `TabDict`:
+
+```python
+from tab2dict import TabDict
+
+building_stock = TabDict.from_file("Data_BuildingStock.xlsx")
+```
+
+Third, create a model-specific class by inheriting the `TabKey` class provided by `tab2dict`, 
+with all the relevant `id_xxx` as its attributes.
+
+```python
+from typing import Optional
+from tab2dict import TabKey
+
+class BuildingTabKey(TabKey):
+    def __init__(
+        self,
+        id_sector: Optional[int] = None,
+        id_building_type: Optional[int] = None,
+        time_year: Optional[int] = None,
+    ):
+        self.id_sector = id_sector
+        self.id_building_type = id_building_type
+        self.time_year = time_year
+```
+
+Fourth, create an instance of the `BuildingTabKey` class to get data from the `building_stock`.
+
+```python
+tkey = BuildingTabKey(id_sector=1, id_building_type=2)
+a = building_stock.get_item(tkey) # -> 12000
+```
+
+There are three main advantages of using `tab2dict`:
+* As implied by the name, `TabDict` use `dict` to save data. So, the speed of `get_item()` is fast. But of course, the input data will all be loaded and take some space in the memory. 
+* It allows the users to adapt the input tables relatively freely (e.g., adding or removing index columns) with limited changes in the code. This is a good feature especially useful in the agent-based models. Because each agent can be assigned with its own `tabkey`, knowing all the `id_xxx` more than necessary for individual tables or `tabdicts`. Then there can be no necessary changes in the code when one more "subscript (`id_xxx` column)" is added to a parameter in is input table.
+
+You can find more detailed introduction in the following sections as well as in the test folder of the project. 
+Hope `tab2dict` can make your life easier in developing models!
 
 ## Getting started
 
@@ -146,6 +203,7 @@ Example: `Data_BuildingParameter.xlsx`
 `tab2dict` provides the base class `TabKey` that has to be inherited and extended according to the input table columns. 
 
 ```python
+from typing import Optional
 from tab2dict import TabKey
 
 class BuildingTabKey(TabKey):
